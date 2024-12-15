@@ -1,0 +1,8 @@
+python-binance
+pandas
+scikit-learn
+matplotlib
+scipy
+ta-lib
+numpy 
+tensorflow
