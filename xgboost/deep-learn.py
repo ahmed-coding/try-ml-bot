@@ -13,14 +13,14 @@ from scipy.stats import uniform
 api_key = ''
 api_secret = ''
 
-# دالة لجلب البيانات التاريخية
+# دالة لجلب البيانات التاريخية 
 def fetch_data(client, symbol, interval='1m', years=5, min_percentage=1, start_time=None):
     """
     جلب بيانات الشموع التاريخية (1m) لمدة معينة من Binance مع فلترة بناءً على نسبة الارتفاع.
     """
 
     # حساب عدد الشموع المطلوبة
-    candles_per_day = 96  # عدد الشموع اليومية
+    candles_per_day = 288  # عدد الشموع اليومية
     days_in_year = 365
     total_candles = candles_per_day * days_in_year * years if not start_time else 1000
 
@@ -82,7 +82,7 @@ client = Client(api_key=api_key, api_secret=api_secret)
 
 # جلب البيانات
 symbol = 'NEIROUSDT'
-interval = '15m'
+interval = '5m'
 years = 2
 min_percentage = 0.5
 df = fetch_data(client, symbol, interval=interval, years=years, min_percentage=min_percentage)
@@ -166,7 +166,7 @@ print("أفضل معلمات:", best_params)
 
 # تقييم النموذج النهائي
 best_model = grid_search.best_estimator_
-best_model = grid_search
+# best_model = grid_search
 y_pred_prob = best_model.predict_proba(X_test)[:, 1]
 y_pred = (y_pred_prob >= 0.5).astype(int)
 
@@ -175,10 +175,10 @@ accuracy = accuracy_score(y_test, y_pred)
 roc_auc = roc_auc_score(y_test, y_pred_prob)
 print("دقة النموذج:", accuracy)
 print("AUC:", roc_auc)
-print("\nتقرير التصنيف:\n", classification_report(y_test, y_pred))
+print("\nتقرير التصنيف:\n", classification_report(y_test, y_pred,zero_division=1))
 
 # حفظ النموذج المدرب
-model_path = 'best_xgboost_model.pkl'
+model_path = f'{symbol}_{interval}_xgboost_model.pkl'
 joblib.dump(best_model, model_path)
 print(f"تم حفظ النموذج في {model_path}")
 
@@ -188,9 +188,9 @@ def load_model(path):
     return joblib.load(path)
 
 # مثال على استخدام النموذج المحفوظ
-# loaded_model = load_model(model_path)
-# new_predictions = loaded_model.predict(X_test)
-# print("نتائج باستخدام النموذج المحمل:", new_predictions)
+loaded_model = load_model(model_path)
+new_predictions = loaded_model.predict(X_test)
+print("نتائج باستخدام النموذج المحمل:", new_predictions)
 
 # تحسين النموذج باستخدام بيانات جديدة
 def incremental_learning(new_data, model_path):
