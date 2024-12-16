@@ -11,12 +11,14 @@ interval = '5m'
 api_key = ''
 api_secret = ''
 
-model_path = f'{symbol}_{interval}_xgboost_model.pkl'
+# model_path = f'{symbol}_{interval}_xgboost_model.pkl'
+
+model_path = f'neirousdt_xgboost_price_model_with_gridsearch.pkl'
 
 client = Client(api_key=api_key, api_secret=api_secret)
 
 
-candles = client.futures_klines(symbol=symbol, interval=interval, limit=5)
+candles = client.futures_klines(symbol=symbol, interval='1h', limit=20)
 
 
 # إنشاء DataFrame
@@ -33,6 +35,7 @@ df['Volume'] = df['Volume'].astype(float)
 df['Open_Time'] = pd.to_datetime(df['Open_Time'], unit='ms')
 
 # حساب نسبة التغيير لكل شمعة
+
 df['Change_Percentage'] = ((df['High'] - df['Open']) / df['Open']) * 100
 
 
