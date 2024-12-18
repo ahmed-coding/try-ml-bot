@@ -11,7 +11,6 @@ idna==3.10
 joblib==1.4.2
 multidict==6.1.0
 numpy==1.21.2
-nvidia-nccl-cu12==2.23.4
 pandas==2.0.3
 propcache==0.2.1
 pycryptodome==3.21.0

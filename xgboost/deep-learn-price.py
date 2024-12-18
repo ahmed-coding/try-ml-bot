@@ -44,9 +44,9 @@ def fetch_data(client, symbol, interval='1m', years=5, min_percentage=1, start_t
     df['Open_Time'] = pd.to_datetime(df['Open_Time'], unit='ms')
 
     df['Change_Percentage'] = ((df['High'] - df['Open']) / df['Open']) * 100
-    filtered_df = df[df['Change_Percentage'] >= min_percentage]
+    # filtered_df = df[df['Change_Percentage'] >= min_percentage]
 
-    return filtered_df[['Open_Time', 'Open', 'High', 'Low', 'Close', 'Volume', 'Change_Percentage']]
+    return df[['Open_Time', 'Open', 'High', 'Low', 'Close', 'Volume', 'Change_Percentage']]
 
 # إعداد API Binance
 client = Client(api_key='your_api_key', api_secret='your_api_secret')
@@ -57,7 +57,21 @@ interval = '5m'
 years = 2
 min_percentage = 0.5
 # إعداد الهدف للتنبؤ بسعر الإغلاق في الشمعة القادمة (مثل التنبؤ بالإغلاق بعد 5 شمعات)
-look_ahead = 5
+look_ahead = 1
+
+
+# param_grid = {
+#     'max_depth': [7],
+#     'learning_rate': [0.3],
+#     'n_estimators': [1000],
+#     'subsample': [0.8],
+#     'colsample_bytree': [0.8],
+#     'lambda': [1],
+#     'alpha': [0.5],
+#     'gamma': [0, 0.1, 0.2],
+#     'min_child_weight': [1, 2, 3]
+#     # 'eval_metric': 'logloss',
+# }
 
 param_grid = {
     'max_depth': [3, 5, 7],
@@ -163,4 +177,4 @@ new_data = df[['Open', 'High', 'Low', 'Close', 'Volume']].iloc[-1:]  # آخر س
 new_prediction = best_model.predict(new_data)
 # عرض النتائج
 # for i in range(10):
-print(f"الشمعة: التنبؤ بسعر الإغلاق بعد 5 شمعات = {new_prediction:.2f}, السعر الفعلي = {y_test.iloc[-1]:.2f}")
+print(f"الشمعة: التنبؤ بسعر الإغلاق بعد 5 شمعات = {new_prediction}, السعر الفعلي = {y_test.iloc[-1]:.2f}")

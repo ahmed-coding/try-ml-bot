@@ -1,13 +1,14 @@
 import joblib
 from binance.client import Client
 import pandas as pd
+import joblib
 
 
 
 
 
 symbol = 'NEIROUSDT'
-interval = '5m'
+interval = '1h'
 api_key = ''
 api_secret = ''
 
@@ -18,8 +19,7 @@ model_path = f'neirousdt_xgboost_price_model_with_gridsearch.pkl'
 client = Client(api_key=api_key, api_secret=api_secret)
 
 
-candles = client.futures_klines(symbol=symbol, interval='1h', limit=20)
-
+candles = client.futures_klines(symbol=symbol, interval=interval, limit=5)
 
 # إنشاء DataFrame
 df = pd.DataFrame(candles, columns=[
@@ -38,9 +38,10 @@ df['Open_Time'] = pd.to_datetime(df['Open_Time'], unit='ms')
 
 df['Change_Percentage'] = ((df['High'] - df['Open']) / df['Open']) * 100
 
-
+# print(df.iloc[-1:])
 
 new_data = df[['Open', 'High', 'Low', 'Close', 'Volume']].iloc[-1:]
+# new_data = df[['Open', 'High', 'Low', 'Close', 'Volume']]
 
 
 loaded_model = joblib.load(model_path)

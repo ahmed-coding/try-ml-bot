@@ -78,7 +78,7 @@ def fetch_data(client, symbol, interval='1m', years=5, min_percentage=1, start_t
     # filtered_df = df[df['Change_Percentage'] >= min_percentage]
 
     return df[['Open_Time', 'Open', 'High', 'Low', 'Close', 'Volume', 'Change_Percentage']]
-    
+
 
 # إعداد API Binance
 client = Client(api_key=api_key, api_secret=api_secret)
@@ -91,13 +91,14 @@ min_percentage = 0.5
 df = fetch_data(client, symbol, interval=interval,
                 years=years, min_percentage=min_percentage)
 
-# إضافة الهدف (Target) لتصنيف الشموع
-threshold = 1  # الهدف: ارتفاع أكبر من 1%
-df['Target'] = (df['Change_Percentage'] > threshold).astype(int)
+
+
+# تحديد الهدف وهو السعر الذي نريد التنبؤ به (سعر الإغلاق للشمعة التالية)
+df['Next_Close'] = df['Close'].shift(-1)  # تحديد سعر الإغلاق للشمعة التالية كهدف
 
 # تقسيم الميزات والمخرجات
 X = df[['Open', 'High', 'Low', 'Close', 'Volume']]
-y = df['Target']
+y = df['Next_Close']
 
 # تقسيم البيانات إلى تدريب واختبار
 X_train, X_test, y_train, y_test = train_test_split(
@@ -148,11 +149,13 @@ for max_depth in param_grid['max_depth']:
                     best_score = mean_score
                     best_params = params
 
+# إنشاء نموذج XGBoost
+# xg_reg = xgb.XGBRegressor(objective='reg:squarederror')
+
 grid_search = GridSearchCV(
-    estimator=xgb.XGBClassifier(
-        objective='binary:logistic',
-        eval_metric='logloss',
-    ),
+        xgb.XGBRegressor(
+            objective='reg:squarederror'
+            ),
     param_grid=best_params,
     scoring='accuracy',
     cv=3,
@@ -177,6 +180,7 @@ print("أفضل معلمات:", best_params)
 best_model = grid_search.best_estimator_
 # best_model = grid_search
 y_pred_prob = best_model.predict_proba(X_test)[:, 1]
+
 y_pred = (y_pred_prob >= 0.5).astype(int)
 
 # تقييم الأداء
