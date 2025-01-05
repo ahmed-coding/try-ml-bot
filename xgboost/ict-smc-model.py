@@ -128,22 +128,35 @@ y = y.fillna(0)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 param_grid = {
-    'max_depth': [3, 5, 7, 10],
-    'learning_rate': [0.001, 0.01, 0.1],
-    'n_estimators': [100, 300, 500, 1000],
-    'subsample': [0.6, 0.8, 1.0],
-    'colsample_bytree': [0.6, 0.8, 1.0],
+    'max_depth': [3, 5, 7],
+    'learning_rate': [0.01, 0.1, 0.2],
+    'n_estimators': [100, 300, 500],
+    'subsample': [0.8, 1.0],
+    'colsample_bytree': [0.8, 1.0],
     'gamma': [0, 0.1, 0.2],
     'lambda': [1, 1.5, 2],
     'alpha': [0, 0.5, 1],
+    'tree_method': ['gpu_hist'],
 }
+
+# param_grid = {
+#     'max_depth': [3, 5, 7, 10],
+#     'learning_rate': [0.001, 0.01, 0.1],
+#     'n_estimators': [100, 300, 500, 1000],
+#     'subsample': [0.6, 0.8, 1.0],
+#     'colsample_bytree': [0.6, 0.8, 1.0],
+#     'gamma': [0, 0.1, 0.2],
+#     'lambda': [1, 1.5, 2],
+#     'alpha': [0, 0.5, 1],
+#     'tree_method': ['gpu_hist'],
+# }
 
 
 grid_search = GridSearchCV(
-    xgb.XGBRegressor(objective='reg:squarederror'),
+    xgb.XGBRegressor(objective='reg:squarederror', tree_method='gpu_hist'),
     param_grid=param_grid,
     scoring='neg_mean_squared_error',
-    cv=5,
+    cv=3,
     verbose=1
 )
 
